@@ -1,31 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { fetchMarcas } from './API/apifipe';  
 import { Container, Typography, List, ListItem, ListItemText, CircularProgress, Alert, Box } from '@mui/material';
 
 function App() {
-  const [data, setData] = useState([]);  // Armazenar as marcas de carros
-  const [loading, setLoading] = useState(true);  // Controlar o estado de carregamento
-  const [error, setError] = useState(null);  // Armazenar erros caso ocorram
+  const [data, setData] = useState([]);  
+  const [loading, setLoading] = useState(true);  
+  const [error, setError] = useState(null);  
 
-  // Função para buscar as marcas de carros
   useEffect(() => {
     const fetchData = async () => {
-      console.log('Iniciando requisição para marcas de carros...');
       try {
-        // Requisição para a API de marcas de carros
-        const response = await axios.get('https://parallelum.com.br/fipe/api/v1/carros/marcas');
-        console.log('Resposta recebida:', response.data);  // Logando a resposta da API
-        setData(response.data);  // Armazenar as marcas recebidas
-        setLoading(false);  // Alterar o estado de carregamento para false
+        const marcas = await fetchMarcas();  
+        setData(marcas);  
+        setLoading(false);  
       } catch (err) {
-        console.error('Erro na requisição:', err);
         setError('Erro ao buscar dados');
         setLoading(false);
       }
     };
 
-    fetchData();  // Chama a função para buscar os dados da API
-  }, []);  // O array vazio faz a requisição ser feita apenas uma vez, na montagem do componente
+    fetchData();
+  }, []);
 
   return (
     <Container maxWidth="lg">
@@ -43,9 +38,7 @@ function App() {
         <List>
           {data.map((item) => (
             <ListItem key={item.codigo} divider>
-              <ListItemText 
-                primary={item.nome}  // Nome da marca
-              />
+              <ListItemText primary={item.nome} />
             </ListItem>
           ))}
         </List>
@@ -55,4 +48,3 @@ function App() {
 }
 
 export default App;
-
