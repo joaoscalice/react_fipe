@@ -1,44 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Tabela from './components/Tabela/Tabela'; // Caminho correto para o arquivo Tabela
+import Tabela from './components/Tabela/Tabela'; 
 import { fetchMarcas } from './components/API/apifipe';
 import { Container, Typography, CircularProgress, Alert, Box, Autocomplete, TextField, Button } from '@mui/material';
 
 function App() {
-  const [data, setData] = useState([]);  // Armazenar as marcas de carros
-  const [loading, setLoading] = useState(true);  // Controlar o estado de carregamento
-  const [error, setError] = useState(null);  // Armazenar erros caso ocorram
-  const [marcaSelecionada, setMarca] = useState(''); // Estado para armazenar a marca
-  const [modelos, setModelos] = useState([]); // Armazenar os modelos de carros
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [marcaSelecionada, setMarca] = useState('');
+  const [modelos, setModelos] = useState([]);
+  const [modeloSelecionado, setModelo] = useState('');
+  const [anos, setAnos] = useState([]);
+  const [anoSelecionado, setAno] = useState('');
+  const [infoVeiculo, setInfoVeiculo] = useState(null); 
 
-  // Função para buscar as marcas de carros
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const marcas = await fetchMarcas();  // Usar a função fetchMarcas de apifipe.js
+        const marcas = await fetchMarcas();
         setData(marcas);
-        setLoading(false);
       } catch (err) {
         console.error('Erro na requisição:', err);
         setError('Erro ao buscar dados');
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchData();  // Chama a função para buscar os dados da API
-  }, []);  // O array vazio faz a requisição ser feita apenas uma vez, na montagem do componente
+    fetchData();
+  }, []);
 
-  // Cria a lista de marcas para o Autocomplete
-  let marcas = data.map(item => item.nome);
+  useEffect(() => {
+    if (marcaSelecionada) {
+      const marca = data.find(item => item.nome === marcaSelecionada);
+      if (marca) {
+        setModelo('');
+        setAno('');
+        setAnos([]);
+        setInfoVeiculo(null); 
+        fetchModelos(marca.codigo);
+      }
+    }
+  }, [marcaSelecionada, data]);
 
-  // Função para buscar modelos de carros após selecionar uma marca
+  useEffect(() => {
+    if (modeloSelecionado && marcaSelecionada) {
+      const marca = data.find(item => item.nome === marcaSelecionada);
+      const modelo = modelos.find(mod => mod.nome === modeloSelecionado);
+
+      if (marca && modelo) {
+        fetchAnos(marca.codigo, modelo.codigo);
+      }
+    }
+  }, [modeloSelecionado, modelos, data, marcaSelecionada]);
+
   const fetchModelos = async (codigo) => {
     setLoading(true);
-    setError(null); // Reseta o erro antes da nova requisição
-
+    setError(null);
     try {
       const response = await axios.get(`https://parallelum.com.br/fipe/api/v1/carros/marcas/${codigo}/modelos`);
-      setModelos(response.data.modelos); // Atualiza o estado com os modelos
+      setModelos(response.data.modelos);
     } catch (err) {
       console.error('Erro ao buscar modelos:', err);
       setError('Erro ao carregar modelos');
@@ -47,15 +70,46 @@ function App() {
     }
   };
 
-  // Função chamada ao clicar no botão "Consultar modelos"
-  const cliqueBotaoMarca = () => {
-    const marca = data.find(item => item.nome === marcaSelecionada);
-    if (marca) {
-      fetchModelos(marca.codigo); // Faz a requisição usando o código da marca
-    } else {
-      setError('Marca não encontrada');
+  const fetchAnos = async (codigoMarca, codigoModelo) => {
+    if (!codigoMarca || !codigoModelo) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`https://parallelum.com.br/fipe/api/v1/carros/marcas/${codigoMarca}/modelos/${codigoModelo}/anos`);
+      setAnos(response.data);
+    } catch (err) {
+      console.error('Erro ao buscar os anos dos veículos:', err);
+      setError('Erro ao carregar os anos dos veículos');
+    } finally {
+      setLoading(false);
     }
   };
+
+  const fetchInfo = async () => {
+    const marca = data.find(item => item.nome === marcaSelecionada);
+    const modelo = modelos.find(mod => mod.nome === modeloSelecionado);
+    const ano = anos.find(a => a.nome === anoSelecionado);
+
+    if (!marca || !modelo || !ano) {
+      setError('Selecione todos os campos corretamente');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(`https://parallelum.com.br/fipe/api/v1/carros/marcas/${marca.codigo}/modelos/${modelo.codigo}/anos/${ano.codigo}`);
+      setInfoVeiculo(response.data); 
+    } catch (err) {
+      console.error('Erro ao buscar as informações do veículo:', err);
+      setError('Erro ao carregar as informações do veículo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const marcas = data.map(item => item.nome);
 
   return (
     <Container maxWidth="lg">
@@ -76,13 +130,37 @@ function App() {
             options={marcas}
             sx={{ width: 300 }}
             value={marcaSelecionada}
-            onChange={(ev, novoValor) => setMarca(novoValor)}  // Atualiza a marca selecionada
+            onChange={(ev, novoValor) => {
+              setMarca(novoValor);
+              setModelo('');
+              setAno('');
+              setInfoVeiculo(null);
+              setAnos([]);
+            }}
             renderInput={(params) => <TextField {...params} label="Marcas" />}
           />
-          <Button className="botao" variant="contained" onClick={cliqueBotaoMarca}>Consultar modelos</Button>
 
-          {/* Exibe a Tabela de Modelos, se houver modelos */}
-          {modelos.length > 0 && <Tabela modelos={modelos} />}
+          <Autocomplete
+            disablePortal
+            options={modelos.map(modelo => modelo.nome)}
+            sx={{ width: 300, marginTop: 2 }}
+            value={modeloSelecionado}
+            onChange={(ev, novoValor) => setModelo(novoValor)}
+            renderInput={(params) => <TextField {...params} label="Modelos" />}
+          />
+
+          <Autocomplete
+            disablePortal
+            options={anos.map(ano => ano.nome)}
+            sx={{ width: 300, marginTop: 2 }}
+            value={anoSelecionado}
+            onChange={(ev, novoValor) => setAno(novoValor)}
+            renderInput={(params) => <TextField {...params} label="Anos" />}
+          />
+
+          <Button onClick={fetchInfo} variant="contained" sx={{ marginTop: 2 }}>Consultar informações</Button>
+
+          {infoVeiculo && <Tabela infoVeiculo={infoVeiculo} />}
         </>
       )}
     </Container>

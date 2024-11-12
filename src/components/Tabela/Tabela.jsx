@@ -7,19 +7,23 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-const Tabela = React.memo(({ modelos }) => {
+const Tabela = React.memo(({ infoVeiculo }) => {
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+    <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+      <Table sx={{ minWidth: 650 }} aria-label="vehicle information table">
         <TableHead>
           <TableRow>
-            <TableCell>Modelos</TableCell>
+            <TableCell>Campo</TableCell>
+            <TableCell>Valor</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {modelos.map((modelo, index) => (
-            <TableRow key={index} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TableCell component="th" scope="row">{modelo.nome}</TableCell>
+          {Object.entries(infoVeiculo).map(([key, value], index) => (
+            <TableRow key={index}>
+              <TableCell component="th" scope="row">
+                {key}
+              </TableCell>
+              <TableCell>{value}</TableCell>
             </TableRow>
           ))}
         </TableBody>
