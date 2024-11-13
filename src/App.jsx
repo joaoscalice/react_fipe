@@ -3,8 +3,8 @@ import axios from 'axios';
 import Tabela from './components/Tabela/Tabela'; 
 import { fetchMarcas } from './components/API/apifipe';
 import { Container, Typography, CircularProgress, Alert, Box, Autocomplete, TextField, Button } from '@mui/material';
-import Header from './components/Header/Header'; // Importando o Header
-import Footer from './components/Footer/Footer'; // Importando o Footer
+import Header from './components/Header/Header'; 
+import Footer from './components/Footer/Footer'; 
 
 function App() {
   const [data, setData] = useState([]);
@@ -115,14 +115,20 @@ function App() {
 
   return (
     <>
-      {/* Header do sistema */}
       <Header />
 
-      <Container maxWidth="lg">
-        <Typography variant="h3" gutterBottom align="center">
-          React FIPE
-        </Typography>
-
+      <Container
+        maxWidth="lg"
+        sx={{
+          height: 'calc(100vh - 40px - 60px)',   
+          display: 'flex',
+          flexDirection: 'column',  
+          justifyContent: 'center', 
+          alignItems: 'flex-start', 
+          paddingLeft: 4,  
+          paddingRight: 2,  
+        }}
+      >
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
             <CircularProgress />
@@ -131,11 +137,22 @@ function App() {
           <Alert severity="error">{error}</Alert>
         ) : (
           <>
-            <Box display="flex" justifyContent="space-between" sx={{ width: '100%', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Box
+              display="flex"
+              flexDirection="row"
+              justifyContent="flex-start"  
+              sx={{ 
+                width: '100%', 
+                gap: 2, 
+                flexWrap: 'wrap', 
+                maxWidth: 600, 
+                marginLeft: '600px'  
+              }}
+            >
               <Autocomplete
                 disablePortal
                 options={marcas}
-                sx={{ flex: 1 }}
+                sx={{ flex: 1, minWidth: 150 }}
                 value={marcaSelecionada}
                 onChange={(ev, novoValor) => {
                   setMarca(novoValor);
@@ -150,7 +167,7 @@ function App() {
               <Autocomplete
                 disablePortal
                 options={modelos.map(modelo => modelo.nome)}
-                sx={{ flex: 1 }}
+                sx={{ flex: 1, minWidth: 150 }}
                 value={modeloSelecionado}
                 onChange={(ev, novoValor) => setModelo(novoValor)}
                 renderInput={(params) => <TextField {...params} label="Modelos" />}
@@ -159,21 +176,22 @@ function App() {
               <Autocomplete
                 disablePortal
                 options={anos.map(ano => ano.nome)}
-                sx={{ flex: 1 }}
+                sx={{ flex: 1, minWidth: 150 }}
                 value={anoSelecionado}
                 onChange={(ev, novoValor) => setAno(novoValor)}
                 renderInput={(params) => <TextField {...params} label="Anos" />}
               />
             </Box>
 
-            <Button onClick={fetchInfo} variant="contained" sx={{ marginTop: 2 }}>Consultar informações</Button>
+            <Box display="flex" justifyContent="flex-start" sx={{ marginTop: 2, width: '100%', paddingLeft: 97 }}>
+              <Button onClick={fetchInfo} variant="contained">Consultar informações</Button>
+            </Box>
+
 
             {infoVeiculo && <Tabela infoVeiculo={infoVeiculo} />}
           </>
         )}
       </Container>
-
-      {/* Footer do sistema */}
       <Footer />
     </>
   );
