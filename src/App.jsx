@@ -3,6 +3,8 @@ import axios from 'axios';
 import Tabela from './components/Tabela/Tabela'; 
 import { fetchMarcas } from './components/API/apifipe';
 import { Container, Typography, CircularProgress, Alert, Box, Autocomplete, TextField, Button } from '@mui/material';
+import Header from './components/Header/Header'; // Importando o Header
+import Footer from './components/Footer/Footer'; // Importando o Footer
 
 function App() {
   const [data, setData] = useState([]);
@@ -112,58 +114,68 @@ function App() {
   const marcas = data.map(item => item.nome);
 
   return (
-    <Container maxWidth="lg">
-      <Typography variant="h3" gutterBottom>
-        React FIPE
-      </Typography>
+    <>
+      {/* Header do sistema */}
+      <Header />
 
-      {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-          <CircularProgress />
-        </Box>
-      ) : error ? (
-        <Alert severity="error">{error}</Alert>
-      ) : (
-        <>
-          <Autocomplete
-            disablePortal
-            options={marcas}
-            sx={{ width: 300 }}
-            value={marcaSelecionada}
-            onChange={(ev, novoValor) => {
-              setMarca(novoValor);
-              setModelo('');
-              setAno('');
-              setInfoVeiculo(null);
-              setAnos([]);
-            }}
-            renderInput={(params) => <TextField {...params} label="Marcas" />}
-          />
+      <Container maxWidth="lg">
+        <Typography variant="h3" gutterBottom align="center">
+          React FIPE
+        </Typography>
 
-          <Autocomplete
-            disablePortal
-            options={modelos.map(modelo => modelo.nome)}
-            sx={{ width: 300, marginTop: 2 }}
-            value={modeloSelecionado}
-            onChange={(ev, novoValor) => setModelo(novoValor)}
-            renderInput={(params) => <TextField {...params} label="Modelos" />}
-          />
+        {loading ? (
+          <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+            <CircularProgress />
+          </Box>
+        ) : error ? (
+          <Alert severity="error">{error}</Alert>
+        ) : (
+          <>
+            <Box display="flex" justifyContent="space-between" sx={{ width: '100%', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Autocomplete
+                disablePortal
+                options={marcas}
+                sx={{ flex: 1 }}
+                value={marcaSelecionada}
+                onChange={(ev, novoValor) => {
+                  setMarca(novoValor);
+                  setModelo('');
+                  setAno('');
+                  setInfoVeiculo(null);
+                  setAnos([]);
+                }}
+                renderInput={(params) => <TextField {...params} label="Marcas" />}
+              />
 
-          <Autocomplete
-            disablePortal
-            options={anos.map(ano => ano.nome)}
-            sx={{ width: 300, marginTop: 2 }}
-            value={anoSelecionado}
-            onChange={(ev, novoValor) => setAno(novoValor)}
-            renderInput={(params) => <TextField {...params} label="Anos" />}
-          />
+              <Autocomplete
+                disablePortal
+                options={modelos.map(modelo => modelo.nome)}
+                sx={{ flex: 1 }}
+                value={modeloSelecionado}
+                onChange={(ev, novoValor) => setModelo(novoValor)}
+                renderInput={(params) => <TextField {...params} label="Modelos" />}
+              />
 
-          <Button onClick={fetchInfo} variant="contained" sx={{ marginTop: 2 }}>Consultar informações</Button>
+              <Autocomplete
+                disablePortal
+                options={anos.map(ano => ano.nome)}
+                sx={{ flex: 1 }}
+                value={anoSelecionado}
+                onChange={(ev, novoValor) => setAno(novoValor)}
+                renderInput={(params) => <TextField {...params} label="Anos" />}
+              />
+            </Box>
 
-          {infoVeiculo && <Tabela infoVeiculo={infoVeiculo} />}
-        </>
-      )}
-    </Container>
+            <Button onClick={fetchInfo} variant="contained" sx={{ marginTop: 2 }}>Consultar informações</Button>
+
+            {infoVeiculo && <Tabela infoVeiculo={infoVeiculo} />}
+          </>
+        )}
+      </Container>
+
+      {/* Footer do sistema */}
+      <Footer />
+    </>
   );
 }
 
