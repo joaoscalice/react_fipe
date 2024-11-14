@@ -111,6 +111,16 @@ function App() {
     }
   };
 
+  const limparCampos = () => {
+    setMarca('');
+    setModelo('');
+    setAno('');
+    setModelos([]);
+    setAnos([]);
+    setInfoVeiculo(null);
+    setError(null);
+  };
+
   const marcas = data.map(item => item.nome);
 
   return (
@@ -129,6 +139,7 @@ function App() {
           paddingRight: 2,  
         }}
       >
+
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
             <CircularProgress />
@@ -185,8 +196,8 @@ function App() {
 
             <Box display="flex" justifyContent="flex-start" sx={{ marginTop: 2, width: '100%', paddingLeft: 97 }}>
               <Button onClick={fetchInfo} variant="contained">Consultar informações</Button>
+              <Button onClick={limparCampos} variant="outlined" color="secondary" sx={{ marginLeft: 2 }}>Limpar</Button>
             </Box>
-
 
             {infoVeiculo && <Tabela infoVeiculo={infoVeiculo} />}
           </>

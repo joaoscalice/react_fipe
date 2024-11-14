@@ -1,4 +1,3 @@
-// src/components/Header/index.js
 import React from 'react';
 import { Typography, Box } from '@mui/material';
 import { headerStyles } from './style';  

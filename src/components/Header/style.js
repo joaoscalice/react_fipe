@@ -1,4 +1,3 @@
-// src/components/Header/style.js
 export const headerStyles = {
     container: {
       
@@ -6,7 +5,7 @@ export const headerStyles = {
       justifyContent: 'center',
       alignItems: 'center',
       width: '100%',
-      height: 'auto',  // Remova ou ajuste a altura aqui
+      height: 'auto', 
     },
     title: {
       color: 'white',

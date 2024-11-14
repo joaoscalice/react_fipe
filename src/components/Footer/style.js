@@ -1,4 +1,3 @@
-// src/components/Footer/style.js
 export const footerStyles = {
     container: {
       width: '100%',
