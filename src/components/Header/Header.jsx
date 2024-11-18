@@ -1,12 +1,20 @@
 import React from 'react';
 import { Typography, Box } from '@mui/material';
+import { headerStyles } from './style';  
 
 function Header() {
   return (
-    <Box sx={{ backgroundColor: '#1976d2', padding: '20px' }}>
-      <Typography variant="h4" color="white">
-        Sistema de Marcas de Carros
-      </Typography>
+    <Box sx={headerStyles.container}>
+      <Box sx={{ 
+        width: '100%', 
+        display: 'flex', 
+        justifyContent: 'flex-start',  
+        paddingLeft: '800px', 
+      }}>
+        <Typography sx={headerStyles.title}>
+          Marcas de Carros
+        </Typography>
+      </Box>
     </Box>
   );
 }

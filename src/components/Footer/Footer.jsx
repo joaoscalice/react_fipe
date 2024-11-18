@@ -1,12 +1,20 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
+import { footerStyles } from './style';  
 
 function Footer() {
   return (
-    <Box sx={{ backgroundColor: '#1976d2', padding: '10px', marginTop: '20px' }}>
-      <Typography variant="body1" color="white" align="center">
-        &copy; 2024 Marcas de Carros
-      </Typography>
+    <Box sx={footerStyles.container}>
+      <Box sx={{ 
+        width: '100%', 
+        display: 'flex', 
+        justifyContent: 'flex-start',  
+        paddingLeft: '800px',  
+      }}>
+        <Typography sx={footerStyles.title}>
+          © 2024 - Todos os direitos reservados.
+        </Typography>
+      </Box>
     </Box>
   );
 }
