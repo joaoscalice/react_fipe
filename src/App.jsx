@@ -4,7 +4,8 @@ import Tabela from './components/Tabela/Tabela';
 import { fetchMarcas } from './components/API/apifipe';
 import { Container, Typography, CircularProgress, Alert, Box, Autocomplete, TextField, Button } from '@mui/material';
 import Header from './components/Header/Header'; 
-import Footer from './components/Footer/Footer'; 
+import Footer from './components/Footer/Footer';
+import Login from './components/Login/Login'; // Importando o componente de login
 
 function App() {
   const [data, setData] = useState([]);
@@ -16,6 +17,7 @@ function App() {
   const [anos, setAnos] = useState([]);
   const [anoSelecionado, setAno] = useState('');
   const [infoVeiculo, setInfoVeiculo] = useState(null); 
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para controle de login
 
   useEffect(() => {
     const fetchData = async () => {
@@ -123,87 +125,98 @@ function App() {
 
   const marcas = data.map(item => item.nome);
 
+  // Função chamada após o login para alterar o estado isLoggedIn
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
   return (
     <>
-      <Header />
+      {!isLoggedIn ? (
+        <Login onLogin={handleLogin} /> // Exibe a tela de login
+      ) : (
+        <>
+          <Header />
 
-      <Container
-        maxWidth="lg"
-        sx={{
-          height: 'calc(100vh - 40px - 60px)',   
-          display: 'flex',
-          flexDirection: 'column',  
-          justifyContent: 'center', 
-          alignItems: 'flex-start', 
-          paddingLeft: 4,  
-          paddingRight: 2,  
-        }}
-      >
+          <Container
+            maxWidth="lg"
+            sx={{
+              height: 'calc(100vh - 40px - 60px)',   
+              display: 'flex',
+              flexDirection: 'column',  
+              justifyContent: 'center', 
+              alignItems: 'flex-start', 
+              paddingLeft: 4,  
+              paddingRight: 2,  
+            }}
+          >
 
-        {loading ? (
-          <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-            <CircularProgress />
-          </Box>
-        ) : error ? (
-          <Alert severity="error">{error}</Alert>
-        ) : (
-          <>
-            <Box
-              display="flex"
-              flexDirection="row"
-              justifyContent="flex-start"  
-              sx={{ 
-                width: '100%', 
-                gap: 2, 
-                flexWrap: 'wrap', 
-                maxWidth: 600, 
-                marginLeft: '600px'  
-              }}
-            >
-              <Autocomplete
-                disablePortal
-                options={marcas}
-                sx={{ flex: 1, minWidth: 150 }}
-                value={marcaSelecionada}
-                onChange={(ev, novoValor) => {
-                  setMarca(novoValor);
-                  setModelo('');
-                  setAno('');
-                  setInfoVeiculo(null);
-                  setAnos([]);
-                }}
-                renderInput={(params) => <TextField {...params} label="Marcas" />}
-              />
+            {loading ? (
+              <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+                <CircularProgress />
+              </Box>
+            ) : error ? (
+              <Alert severity="error">{error}</Alert>
+            ) : (
+              <>
+                <Box
+                  display="flex"
+                  flexDirection="row"
+                  justifyContent="flex-start"  
+                  sx={{ 
+                    width: '100%', 
+                    gap: 2, 
+                    flexWrap: 'wrap', 
+                    maxWidth: 600, 
+                    marginLeft: '600px'  
+                  }}
+                >
+                  <Autocomplete
+                    disablePortal
+                    options={marcas}
+                    sx={{ flex: 1, minWidth: 150 }}
+                    value={marcaSelecionada}
+                    onChange={(ev, novoValor) => {
+                      setMarca(novoValor);
+                      setModelo('');
+                      setAno('');
+                      setInfoVeiculo(null);
+                      setAnos([]);
+                    }}
+                    renderInput={(params) => <TextField {...params} label="Marcas" />}
+                  />
 
-              <Autocomplete
-                disablePortal
-                options={modelos.map(modelo => modelo.nome)}
-                sx={{ flex: 1, minWidth: 150 }}
-                value={modeloSelecionado}
-                onChange={(ev, novoValor) => setModelo(novoValor)}
-                renderInput={(params) => <TextField {...params} label="Modelos" />}
-              />
+                  <Autocomplete
+                    disablePortal
+                    options={modelos.map(modelo => modelo.nome)}
+                    sx={{ flex: 1, minWidth: 150 }}
+                    value={modeloSelecionado}
+                    onChange={(ev, novoValor) => setModelo(novoValor)}
+                    renderInput={(params) => <TextField {...params} label="Modelos" />}
+                  />
 
-              <Autocomplete
-                disablePortal
-                options={anos.map(ano => ano.nome)}
-                sx={{ flex: 1, minWidth: 150 }}
-                value={anoSelecionado}
-                onChange={(ev, novoValor) => setAno(novoValor)}
-                renderInput={(params) => <TextField {...params} label="Anos" />}
-              />
-            </Box>
+                  <Autocomplete
+                    disablePortal
+                    options={anos.map(ano => ano.nome)}
+                    sx={{ flex: 1, minWidth: 150 }}
+                    value={anoSelecionado}
+                    onChange={(ev, novoValor) => setAno(novoValor)}
+                    renderInput={(params) => <TextField {...params} label="Anos" />}
+                  />
+                </Box>
 
-            <Box display="flex" justifyContent="flex-start" sx={{ marginTop: 2, width: '100%', paddingLeft: 97 }}>
-              <Button onClick={fetchInfo} variant="contained">Consultar informações</Button>
-              <Button onClick={limparCampos} variant="outlined" color="secondary" sx={{ marginLeft: 2 }}>Limpar</Button>
-            </Box>
+                <Box display="flex" justifyContent="flex-start" sx={{ marginTop: 2, width: '100%', paddingLeft: 97 }}>
+                  <Button onClick={fetchInfo} variant="contained">Consultar informações</Button>
+                  <Button onClick={limparCampos} variant="outlined" color="secondary" sx={{ marginLeft: 2 }}>Limpar</Button>
+                </Box>
 
-            {infoVeiculo && <Tabela infoVeiculo={infoVeiculo} />}
-          </>
-        )}
-      </Container>
-      <Footer />
+                {infoVeiculo && <Tabela infoVeiculo={infoVeiculo} />}
+              </>
+            )}
+          </Container>
+          <Footer />
+        </>
+      )}
     </>
   );
 }
