@@ -9,7 +9,7 @@ function Footer() {
         width: '100%', 
         display: 'flex', 
         justifyContent: 'flex-start',  
-        paddingLeft: '800px',  
+        paddingLeft: '570px',  
       }}>
         <Typography sx={footerStyles.title}>
           © 2024 - Todos os direitos reservados.
