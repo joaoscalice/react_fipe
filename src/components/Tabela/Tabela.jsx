@@ -9,8 +9,8 @@ import Paper from '@mui/material/Paper';
 
 const Tabela = React.memo(({ infoVeiculo }) => {
   return (
-    <TableContainer component={Paper} sx={{ marginTop: 2, marginLeft: '300px' }}>
-      <Table sx={{ minWidth: 850 }} aria-label="vehicle information table">
+    <TableContainer component={Paper} sx={{ marginTop: 2, marginLeft: '275px' }}>
+      <Table sx={{ minWidth: 100 }} aria-label="vehicle information table">
         <TableHead>
           <TableRow>
             <TableCell sx={{ textAlign: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>Campo</TableCell>

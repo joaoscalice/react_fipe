@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Tabela from './components/Tabela/Tabela'; 
 import { fetchMarcas } from './components/API/apifipe';
-import { Container, Typography, CircularProgress, Alert, Box, Autocomplete, TextField, Button } from '@mui/material';
+import { Container, CircularProgress, Alert, Box, Autocomplete, TextField, Button } from '@mui/material';
 import Header from './components/Header/Header'; 
 import Footer from './components/Footer/Footer'; 
 import Login from './components/Login/Login';  
@@ -37,6 +37,30 @@ function App() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (marcaSelecionada) {
+      const marca = data.find(item => item.nome === marcaSelecionada);
+      if (marca) {
+        setModelo('');
+        setAno('');
+        setAnos([]);
+        setInfoVeiculo(null); 
+        fetchModelos(marca.codigo);
+      }
+    }
+  }, [marcaSelecionada, data]);
+
+  useEffect(() => {
+    if (modeloSelecionado && marcaSelecionada) {
+      const marca = data.find(item => item.nome === marcaSelecionada);
+      const modelo = modelos.find(mod => mod.nome === modeloSelecionado);
+
+      if (marca && modelo) {
+        fetchAnos(marca.codigo, modelo.codigo);
+      }
+    }
+  }, [modeloSelecionado, modelos, data, marcaSelecionada]);
 
   const handleLogin = () => {
     setIsLoggedIn(true); 
@@ -131,7 +155,18 @@ function App() {
   return (
     <>
       <Header />
-
+      <Button
+        onClick={handleLogout}
+        variant="outlined"
+        color="error"
+        sx={{
+          position: 'absolute',
+          top: 10,
+          right: 20,
+        }}
+      >
+        Logout
+      </Button>
       <Container
         maxWidth="lg"
         sx={{
@@ -144,7 +179,6 @@ function App() {
           paddingRight: 2,  
         }}
       >
-
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
             <CircularProgress />
