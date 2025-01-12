@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
-import { TextField, Button, Box, Typography } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Box, Typography, Link } from '@mui/material';
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, onCadastro, cadastroData }) => {
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
   const [error, setError] = useState('');
 
-  // Definindo as credenciais fixas
-  const usuarioValido = 'admin';
-  const senhaValida = '12345';
+  const usuarioValido = cadastroData?.usuario || 'admin'; // Usa o valor cadastrado ou o padrão
+  const senhaValida = cadastroData?.senha || '12345'; // Usa o valor cadastrado ou o padrão
+
+  useEffect(() => {
+    // Preenche automaticamente os campos com os dados do cadastro, se disponíveis
+    if (cadastroData) {
+      setUsuario(cadastroData.usuario);
+      setSenha(cadastroData.senha);
+    }
+  }, [cadastroData]);
 
   const handleLogin = () => {
     if (usuario === usuarioValido && senha === senhaValida) {
-      onLogin();  // Chama a função de login para redirecionar para a página principal
+      onLogin(); // Chama a função de login para redirecionar para a página principal
     } else {
       setError('Usuário ou senha inválidos');
     }
@@ -52,6 +59,16 @@ const Login = ({ onLogin }) => {
       >
         Entrar
       </Button>
+      <Typography sx={{ marginTop: 2 }}>
+        Não tem uma conta?{' '}
+        <Link
+          component="button"
+          variant="body2"
+          onClick={onCadastro} // Chama a função para redirecionar à tela de cadastro
+        >
+          Cadastre-se
+        </Link>
+      </Typography>
     </Box>
   );
 };
