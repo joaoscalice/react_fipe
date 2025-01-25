@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography } from '@mui/material';
+import axios from 'axios'; 
 import { cadastroStyles } from './style';  
 
 const Cadastro = ({ onFinalizar }) => {
@@ -9,8 +10,9 @@ const Cadastro = ({ onFinalizar }) => {
   const [senha, setSenha] = useState('');
   const [confirmeSenha, setConfirmeSenha] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleFinalizar = () => {
+  const handleFinalizar = async () => {
     if (senha !== confirmeSenha) {
       setError('As senhas não coincidem');
       return;
@@ -23,7 +25,15 @@ const Cadastro = ({ onFinalizar }) => {
       senha,
     };
 
-    onFinalizar(formData); 
+    try {
+      const response = await axios.post('http://localhost:5000/api/register', formData);
+      setMessage(response.data.message); 
+      setError('');
+      onFinalizar(); 
+    } catch (err) {
+      setMessage(''); 
+      setError('Erro ao registrar usuário');
+    }
   };
 
   return (
@@ -73,6 +83,7 @@ const Cadastro = ({ onFinalizar }) => {
           sx={{ marginBottom: 2 }}
         />
         {error && <Typography color="error" sx={{ marginBottom: 2 }}>{error}</Typography>}
+        {message && <Typography color="success" sx={{ marginBottom: 2 }}>{message}</Typography>}
         <Button
           variant="contained"
           onClick={handleFinalizar}

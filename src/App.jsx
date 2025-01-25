@@ -18,9 +18,11 @@ function App() {
   const [anos, setAnos] = useState([]);
   const [anoSelecionado, setAno] = useState('');
   const [infoVeiculo, setInfoVeiculo] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState(null); 
   const [isCadastro, setIsCadastro] = useState(false); 
+  const [isLoading, setIsLoading] = useState(true);
 
+  
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
