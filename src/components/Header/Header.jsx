@@ -9,7 +9,7 @@ function Header() {
         width: '100%', 
         display: 'flex', 
         justifyContent: 'flex-start',  
-        paddingLeft: '570px', 
+        paddingLeft: '770px', 
       }}>
         <Typography sx={headerStyles.title}>
           Marcas de Carros

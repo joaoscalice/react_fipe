@@ -163,7 +163,7 @@ function App() {
         color="error"
         sx={{
           position: 'absolute',
-          top: 10,
+          top: 0,
           right: 20,
         }}
       >
@@ -198,13 +198,13 @@ function App() {
                 gap: 2, 
                 flexWrap: 'wrap', 
                 maxWidth: 800, 
-                marginLeft: '300px'  
+                marginLeft: '500px'  
               }}
             >
               <Autocomplete
                 disablePortal
                 options={marcas}
-                sx={{ flex: 1, minWidth: 100 }}
+                sx={{ flex: 1, minWidth: 110 }}
                 value={marcaSelecionada}
                 onChange={(ev, novoValor) => {
                   setMarca(novoValor);
@@ -235,7 +235,7 @@ function App() {
               />
             </Box>
 
-            <Box display="flex" justifyContent="flex-start" sx={{ marginTop: 2, width: '100%', paddingLeft: 65 }}>
+            <Box display="flex" justifyContent="flex-start" sx={{ marginTop: 2, width: '100%', paddingLeft: 95 }}>
               <Button onClick={fetchInfo} variant="contained">Consultar informações</Button>
               <Button onClick={limparCampos} variant="outlined" color="secondary" sx={{ marginLeft: 2 }}>Limpar</Button>
             </Box>

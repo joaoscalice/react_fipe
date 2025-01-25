@@ -3,8 +3,8 @@ export const cadastroStyles = {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    height: '100vh',  
-    width: '327%',
+    height: '00vh',  
+    width: '427%',
   },
   form: {
     width: '100%',
