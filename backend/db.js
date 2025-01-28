@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/React_Fipe', {
+    await mongoose.connect('mongodb+srv://pedrobuenofaria16:<db_password>@cluster0.qo09w.mongodb.net/', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
