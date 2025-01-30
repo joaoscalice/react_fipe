@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Tabela from './components/Tabela/Tabela'; 
+import Tabela from './components/Tabela/Tabela';
+import TabelaWishList from './components/TabelaWishList/TabelaWishList';
 import { fetchMarcas } from './components/API/apifipe';
 import { Container, CircularProgress, Alert, Box, Autocomplete, TextField, Button } from '@mui/material';
-import Header from './components/Header/Header'; 
-import Footer from './components/Footer/Footer'; 
-import Login from './components/Login/Login';  
-import Cadastro from './components/Cadastro/Cadastro'; 
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
+import Login from './components/Login/Login';
+import Cadastro from './components/Cadastro/Cadastro';
 
 function App() {
   const [data, setData] = useState([]);
@@ -18,10 +19,12 @@ function App() {
   const [anos, setAnos] = useState([]);
   const [anoSelecionado, setAno] = useState('');
   const [infoVeiculo, setInfoVeiculo] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(null); 
-  const [isCadastro, setIsCadastro] = useState(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [isCadastro, setIsCadastro] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddToWishlistButton, setShowAddToWishlistButton] = useState(false);
+  const [wishlist, setWishlist] = useState([]);
+  const [showWishlist, setShowWishlist] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,7 +50,7 @@ function App() {
         setModelo('');
         setAno('');
         setAnos([]);
-        setInfoVeiculo(null); 
+        setInfoVeiculo(null);
         fetchModelos(marca.codigo);
       }
     }
@@ -65,20 +68,20 @@ function App() {
   }, [modeloSelecionado, modelos, data, marcaSelecionada]);
 
   const handleLogin = () => {
-    setIsLoggedIn(true); 
+    setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false); 
+    setIsLoggedIn(false);
   };
 
   const handleCadastro = () => {
-    setIsCadastro(true); 
+    setIsCadastro(true);
   };
 
   const finalizarCadastro = (formData) => {
     console.log('Dados cadastrados:', formData);
-    setIsCadastro(false); 
+    setIsCadastro(false);
   };
 
   if (isCadastro) {
@@ -123,18 +126,19 @@ function App() {
     const marca = data.find(item => item.nome === marcaSelecionada);
     const modelo = modelos.find(mod => mod.nome === modeloSelecionado);
     const ano = anos.find(a => a.nome === anoSelecionado);
-
+  
     if (!marca || !modelo || !ano) {
-      setError('Selecione todos os campos corretamente');
+      alert('Selecione todos os campos corretamente');
+      limparCampos();
       return;
     }
-
+  
     setLoading(true);
     setError(null);
     try {
       const response = await axios.get(`https://parallelum.com.br/fipe/api/v1/carros/marcas/${marca.codigo}/modelos/${modelo.codigo}/anos/${ano.codigo}`);
-      setInfoVeiculo(response.data); 
-      setShowAddToWishlistButton(true); 
+      setInfoVeiculo(response.data);
+      setShowAddToWishlistButton(true);
     } catch (err) {
       console.error('Erro ao buscar as informações do veículo:', err);
       setError('Erro ao carregar as informações do veículo');
@@ -142,7 +146,7 @@ function App() {
       setLoading(false);
     }
   };
-
+  
   const limparCampos = () => {
     setMarca('');
     setModelo('');
@@ -151,7 +155,7 @@ function App() {
     setAnos([]);
     setInfoVeiculo(null);
     setError(null);
-    setShowAddToWishlistButton(false); // Esconde o botão ao limpar os campos
+    setShowAddToWishlistButton(false);
   };
 
   const adicionarAWishlist = async () => {
@@ -162,9 +166,7 @@ function App() {
       modelo: infoVeiculo.Modelo,
       ano: infoVeiculo.AnoModelo,
       valor: infoVeiculo.Valor,
-    }
-    
-    console.log('JSON:', json);
+    };
 
     try {
       await axios.post('http://localhost:5000/api/wishlist', json);
@@ -175,6 +177,32 @@ function App() {
     }
   };
 
+  const visualizarWishlist = async () => {
+    if (showWishlist) {
+      setShowWishlist(false);
+    } else {
+      try {
+        const response = await axios.get('http://localhost:5000/api/wishlist');
+        setWishlist(response.data);
+        setShowWishlist(true);
+      } catch (err) {
+        console.error('Erro ao buscar wishlist:', err);
+        alert('Erro ao carregar wishlist');
+      }
+    }
+  };
+
+  const limparWishlist = async () => {
+    try {
+      await axios.delete('http://localhost:5000/api/wishlist');
+      setWishlist([]);
+      alert('Wishlist limpa com sucesso!');
+    } catch (err) {
+      console.error('Erro ao limpar wishlist:', err);
+      alert('Erro ao limpar wishlist');
+    }
+  };
+
   const marcas = data.map(item => item.nome);
 
   return (
@@ -182,11 +210,11 @@ function App() {
       <Header />
       <Button
         onClick={handleLogout}
-        variant="outlined"
+        variant="contained"
         color="error"
         sx={{
           position: 'absolute',
-          top: 0,
+          top: 10,
           right: 20,
         }}
       >
@@ -195,13 +223,13 @@ function App() {
       <Container
         maxWidth="lg"
         sx={{
-          height: 'calc(100vh - 80px - 60px)',   
+          height: 'calc(100vh - 80px - 60px)',
           display: 'flex',
-          flexDirection: 'column',  
-          justifyContent: 'center', 
-          alignItems: 'flex-start', 
-          paddingLeft: 4,  
-          paddingRight: 2,  
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          paddingLeft: 4,
+          paddingRight: 2,
         }}
       >
         {loading ? (
@@ -215,13 +243,13 @@ function App() {
             <Box
               display="flex"
               flexDirection="row"
-              justifyContent="flex-start"  
-              sx={{ 
-                width: '100%', 
-                gap: 2, 
-                flexWrap: 'wrap', 
-                maxWidth: 800, 
-                marginLeft: '500px'  
+              justifyContent="flex-start"
+              sx={{
+                width: '100%',
+                gap: 2,
+                flexWrap: 'wrap',
+                maxWidth: 800,
+                marginLeft: '500px',
               }}
             >
               <Autocomplete
@@ -260,7 +288,7 @@ function App() {
 
             <Box display="flex" justifyContent="flex-start" sx={{ marginTop: 2, width: '100%', paddingLeft: 95 }}>
               <Button onClick={fetchInfo} variant="contained">Consultar informações</Button>
-              <Button onClick={limparCampos} variant="outlined" color="secondary" sx={{ marginLeft: 2 }}>Limpar</Button>
+              <Button onClick={limparCampos} variant="contained" color="secondary" sx={{ marginLeft: 2 }}>Limpar</Button>
             </Box>
 
             {infoVeiculo && (
@@ -270,6 +298,33 @@ function App() {
                   <Box sx={{ marginTop: 2, width: '100%', paddingLeft: 95 }}>
                     <Button onClick={adicionarAWishlist} variant="contained" color="primary">
                       Adicionar à wishlist
+                    </Button>
+                  </Box>
+                )}
+              </>
+            )}
+
+            <Box sx={{ marginTop: 2, width: '100%', paddingLeft: 95 }}>
+              <Button
+                onClick={visualizarWishlist}
+                variant="contained"
+                color="primary"
+              >
+                {showWishlist ? 'Fechar Wishlist' : 'Visualizar Wishlist'}
+              </Button>
+            </Box>
+
+            {showWishlist && (
+              <>
+                <TabelaWishList wishlist={wishlist} />
+                {wishlist.length > 0 && ( 
+                  <Box sx={{ marginTop: 2, width: '100%', paddingLeft: 95 }}>
+                    <Button
+                      onClick={limparWishlist}
+                      variant="contained"
+                      color="secondary"
+                    >
+                      Limpar Wishlist
                     </Button>
                   </Box>
                 )}

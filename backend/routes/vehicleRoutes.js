@@ -10,7 +10,7 @@ router.post('/wishlist', async (req, res) => {
       marca,
       modelo,
       ano,
-      valor, 
+      valor,
     });
 
     await novoCarro.save();
@@ -22,13 +22,23 @@ router.post('/wishlist', async (req, res) => {
 });
 
 router.get('/wishlist', async (req, res) => {
-    try {
-      const cars = await Car.find();
-      res.status(200).json(cars);
-    } catch (err) {
-      console.error('Erro ao buscar carros:', err);
-      res.status(500).json({ message: 'Erro ao buscar carros', error: err });
-    }
-  });
+  try {
+    const cars = await Car.find();
+    res.status(200).json(cars);
+  } catch (err) {
+    console.error('Erro ao buscar carros:', err);
+    res.status(500).json({ message: 'Erro ao buscar carros', error: err });
+  }
+});
+
+router.delete('/wishlist', async (req, res) => {
+  try {
+    await Car.deleteMany(); 
+    res.status(200).json({ message: 'Wishlist apagada com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao apagar wishlist:', err);
+    res.status(500).json({ message: 'Erro ao apagar wishlist', error: err });
+  }
+});
 
 module.exports = router;
