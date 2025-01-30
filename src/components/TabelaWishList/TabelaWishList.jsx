@@ -9,10 +9,7 @@ import Paper from '@mui/material/Paper';
 
 const TabelaWishList = React.memo(({ wishlist }) => {
   console.log('wishlist:', wishlist);
-  if (!wishlist || wishlist.length <= 0) {
-    return <p>Nenhum item na wishlist.</p>;
-  }
-
+  
   const wishlistItems = Object.values(wishlist); 
 
   return (

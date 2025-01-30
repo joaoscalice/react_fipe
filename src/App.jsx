@@ -316,7 +316,16 @@ function App() {
 
             {showWishlist && (
               <>
-                <TabelaWishList wishlist={wishlist} />
+                {wishlist.length > 0 ? (
+                  wishlist.map((item, index) => (
+                    <Box key={index} sx={{ marginTop: 2, width: '100%' }}>
+                      <TabelaWishList wishlist={[item]} /> 
+                    </Box>
+                  ))
+                ) : (
+                  <p>Nenhum item na wishlist.</p> 
+                )}
+
                 {wishlist.length > 0 && ( 
                   <Box sx={{ marginTop: 2, width: '100%', paddingLeft: 95 }}>
                     <Button
