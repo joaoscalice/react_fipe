@@ -1,10 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv');
+require('dotenv').config({ path: './backend/.env' });
 const authRoutes = require('./routes/authRoutes'); 
+const vehicleRoutes = require('./routes/vehicleRoutes');
 
-dotenv.config();
+console.log('MONGO_URI:', process.env.MONGO_URI);
 
 const app = express();
 
@@ -21,6 +22,7 @@ mongoose.connect(process.env.MONGO_URI, {
 });
 
 app.use('/api', authRoutes);
+app.use('/api', vehicleRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

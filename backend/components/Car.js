@@ -13,7 +13,11 @@ const carSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-});
+  valor: {
+    type: String,
+    required: true, 
+  }
+}, { timestamps: true }); 
 
 const Car = mongoose.model('Car', carSchema);
 

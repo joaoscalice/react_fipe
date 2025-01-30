@@ -21,8 +21,8 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(null); 
   const [isCadastro, setIsCadastro] = useState(false); 
   const [isLoading, setIsLoading] = useState(true);
+  const [showAddToWishlistButton, setShowAddToWishlistButton] = useState(false);
 
-  
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -134,6 +134,7 @@ function App() {
     try {
       const response = await axios.get(`https://parallelum.com.br/fipe/api/v1/carros/marcas/${marca.codigo}/modelos/${modelo.codigo}/anos/${ano.codigo}`);
       setInfoVeiculo(response.data); 
+      setShowAddToWishlistButton(true); 
     } catch (err) {
       console.error('Erro ao buscar as informações do veículo:', err);
       setError('Erro ao carregar as informações do veículo');
@@ -150,6 +151,28 @@ function App() {
     setAnos([]);
     setInfoVeiculo(null);
     setError(null);
+    setShowAddToWishlistButton(false); // Esconde o botão ao limpar os campos
+  };
+
+  const adicionarAWishlist = async () => {
+    if (!infoVeiculo) return;
+
+    const json = {
+      marca: infoVeiculo.Marca,
+      modelo: infoVeiculo.Modelo,
+      ano: infoVeiculo.AnoModelo,
+      valor: infoVeiculo.Valor,
+    }
+    
+    console.log('JSON:', json);
+
+    try {
+      await axios.post('http://localhost:5000/api/wishlist', json);
+      alert('Carro adicionado à wishlist!');
+    } catch (err) {
+      console.error('Erro ao adicionar carro:', err);
+      alert('Erro ao adicionar carro à wishlist');
+    }
   };
 
   const marcas = data.map(item => item.nome);
@@ -240,7 +263,18 @@ function App() {
               <Button onClick={limparCampos} variant="outlined" color="secondary" sx={{ marginLeft: 2 }}>Limpar</Button>
             </Box>
 
-            {infoVeiculo && <Tabela infoVeiculo={infoVeiculo} />}
+            {infoVeiculo && (
+              <>
+                <Tabela infoVeiculo={infoVeiculo} />
+                {showAddToWishlistButton && (
+                  <Box sx={{ marginTop: 2, width: '100%', paddingLeft: 95 }}>
+                    <Button onClick={adicionarAWishlist} variant="contained" color="primary">
+                      Adicionar à wishlist
+                    </Button>
+                  </Box>
+                )}
+              </>
+            )}
           </>
         )}
       </Container>

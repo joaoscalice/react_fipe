@@ -1,0 +1,34 @@
+const express = require('express');
+const Car = require('../components/Car');
+const router = express.Router();
+
+router.post('/wishlist', async (req, res) => {
+  const { marca, modelo, ano, valor } = req.body;
+
+  try {
+    const novoCarro = new Car({
+      marca,
+      modelo,
+      ano,
+      valor, 
+    });
+
+    await novoCarro.save();
+    res.status(201).json({ message: 'Carro adicionado à wishlist com sucesso!' });
+  } catch (err) {
+    console.error('Erro ao adicionar carro:', err);
+    res.status(500).json({ message: 'Erro ao adicionar carro à wishlist', error: err });
+  }
+});
+
+router.get('/wishlist', async (req, res) => {
+    try {
+      const cars = await Car.find();
+      res.status(200).json(cars);
+    } catch (err) {
+      console.error('Erro ao buscar carros:', err);
+      res.status(500).json({ message: 'Erro ao buscar carros', error: err });
+    }
+  });
+
+module.exports = router;
