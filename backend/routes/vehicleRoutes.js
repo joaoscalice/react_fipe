@@ -6,6 +6,12 @@ router.post('/wishlist', async (req, res) => {
   const { marca, modelo, ano, valor } = req.body;
 
   try {
+    const carrosNaWishlist = await Car.find();
+
+    if (carrosNaWishlist.length >= 2) {
+      return res.status(400).json({ message: 'Você já atingiu o limite de 2 carros na wishlist!' });
+    }
+
     const novoCarro = new Car({
       marca,
       modelo,

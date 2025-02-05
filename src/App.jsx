@@ -139,13 +139,18 @@ function App() {
       const response = await axios.get(`https://parallelum.com.br/fipe/api/v1/carros/marcas/${marca.codigo}/modelos/${modelo.codigo}/anos/${ano.codigo}`);
       setInfoVeiculo(response.data);
       setShowAddToWishlistButton(true);
+  
+      const wishlistResponse = await axios.get('http://localhost:5000/api/wishlist');
+      if (wishlistResponse.data.length >= 2) {
+        setShowAddToWishlistButton(false); 
+      }
     } catch (err) {
       console.error('Erro ao buscar as informações do veículo:', err);
       setError('Erro ao carregar as informações do veículo');
     } finally {
       setLoading(false);
     }
-  };
+  };  
   
   const limparCampos = () => {
     setMarca('');
@@ -160,20 +165,24 @@ function App() {
 
   const adicionarAWishlist = async () => {
     if (!infoVeiculo) return;
-
+  
     const json = {
       marca: infoVeiculo.Marca,
       modelo: infoVeiculo.Modelo,
       ano: infoVeiculo.AnoModelo,
       valor: infoVeiculo.Valor,
     };
-
+  
     try {
-      await axios.post('http://localhost:5000/api/wishlist', json);
+      const response = await axios.post('http://localhost:5000/api/wishlist', json);
       alert('Carro adicionado à wishlist!');
     } catch (err) {
       console.error('Erro ao adicionar carro:', err);
-      alert('Erro ao adicionar carro à wishlist');
+      if (err.response && err.response.data.message) {
+        alert(err.response.data.message); 
+      } else {
+        alert('Erro ao adicionar carro à wishlist');
+      }
     }
   };
 
